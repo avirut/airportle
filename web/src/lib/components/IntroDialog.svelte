@@ -45,8 +45,8 @@
 		if (!isOpen) onClose();
 	}}
 >
-	<Dialog.Content class="max-w-[85vw] border border-border/70 bg-card p-0 shadow-2xl sm:max-w-md">
-		<div class="space-y-4 p-4 sm:p-5">
+	<Dialog.Content class="flex max-h-[85dvh] max-w-[85vw] flex-col gap-0 overflow-hidden border border-border/70 bg-card p-0 shadow-2xl sm:max-w-md">
+		<div class="min-h-0 flex-1 space-y-4 overflow-y-auto p-4 sm:p-5">
 			<Dialog.Header class="space-y-1 pr-8">
 				<p class="text-xs font-semibold tracking-[0.22em] text-muted-foreground uppercase">
 					How to play
