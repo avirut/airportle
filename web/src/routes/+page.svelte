@@ -1,2 +1,63 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<script lang="ts">
+	import { onMount } from 'svelte';
+	import { airports, getDailyCode, getTodayDateKey } from '$lib/airports.js';
+	import Footer from '$lib/components/Footer.svelte';
+	import GameBoard from '$lib/components/GameBoard.svelte';
+	import Header from '$lib/components/Header.svelte';
+	import IntroDialog from '$lib/components/IntroDialog.svelte';
+	import Keyboard from '$lib/components/Keyboard.svelte';
+	import ResultToast from '$lib/components/ResultToast.svelte';
+	import { game } from '$lib/game.svelte.js';
+	import { getGameMode, getIntroSeen, setIntroSeen } from '$lib/storage.js';
+
+	let showIntro = $state(false);
+	let loaded = $state(false);
+
+	onMount(() => {
+		const dateKey = getTodayDateKey();
+		const target = getDailyCode(new Date());
+		const mode = getGameMode() ?? 'both';
+
+		game.init(airports, target, dateKey, mode);
+
+		if (!getIntroSeen()) showIntro = true;
+
+		loaded = true;
+	});
+
+	function handleKeydown(event: KeyboardEvent) {
+		if (!loaded || game.status !== 'playing') return;
+		if (event.ctrlKey || event.metaKey || event.altKey) return;
+		if (/^[A-Za-z]$/.test(event.key)) game.addLetter(event.key);
+		else if (event.key === 'Backspace') game.deleteLetter();
+		else if (event.key === 'Enter') game.submitGuess();
+	}
+</script>
+
+<svelte:window onkeydown={handleKeydown} />
+
+{#if !loaded}
+	<div class="flex h-screen items-center justify-center">
+		<span class="text-muted-foreground">Loading...</span>
+	</div>
+{:else}
+	<div class="flex min-h-screen flex-col bg-background">
+		<Header onInfoClick={() => (showIntro = true)} />
+		<main
+			class="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center gap-6 px-4 py-5 sm:px-6"
+		>
+			<GameBoard />
+			<ResultToast />
+			<Keyboard />
+		</main>
+		<Footer />
+	</div>
+
+	<IntroDialog
+		open={showIntro}
+		onClose={() => {
+			showIntro = false;
+			setIntroSeen();
+		}}
+	/>
+{/if}

@@ -2,6 +2,7 @@
 import airportsdata
 import json
 import csv
+import random
 import urllib.request
 
 # %%
@@ -51,8 +52,13 @@ filtered = {
         "size": iata_size.get(iata, "unknown"),
     }
     for iata, data in airports.items()
-    if len(iata) == 3
+    if len(iata) == 3 and iata_size.get(iata) == "large"
 }
+
+# %%
+items = list(filtered.items())
+random.shuffle(items)
+filtered = dict(items)
 
 # %%
 with open("airports.json", "w") as f:
