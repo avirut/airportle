@@ -27,7 +27,7 @@
 				role="radio"
 				aria-checked="true"
 				onclick={() => select(mode.value)}
-				class="rounded-full bg-zinc-700 px-3 py-1 text-xs font-medium text-white shadow-sm"
+				class="rounded-full bg-input px-3 py-1 text-xs font-medium text-muted-foreground shadow-sm"
 			>
 				{mode.label}
 			</button>
