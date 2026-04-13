@@ -2,7 +2,7 @@
 	import { game } from '$lib/game.svelte.js';
 	import { cn } from '$lib/utils.js';
 
-	const airport = $derived(game.status !== 'playing' ? game.airports[game.targetCode] : null);
+	const airport = $derived(game.status !== 'playing' ? game.targetAirport : null);
 </script>
 
 {#if game.status !== 'playing' && airport}

@@ -9,18 +9,19 @@ export interface LetterResult {
 	state: TileState;
 }
 
-export interface Airport {
+export interface PuzzleAirport {
+	code: string;
 	name: string;
 	city: string;
 	subd: string;
 	country: string;
-	lat: number;
-	lon: number;
-	size: string;
 }
 
-export interface AirportMap {
-	[iata: string]: Airport;
+export type CoordsMap = Record<string, [number, number]>;
+
+export interface AirportData {
+	puzzles: PuzzleAirport[];
+	coords: CoordsMap;
 }
 
 export interface GuessResult {

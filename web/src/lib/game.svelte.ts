@@ -1,15 +1,17 @@
 import type {
-	AirportMap,
+	CoordsMap,
 	GameMode,
 	GuessResult,
 	LetterResult,
 	PersistedDayState,
+	PuzzleAirport,
 	TileState
 } from './types.js';
 import { bearing, compassDir, haversineKm } from './geo.js';
 import { getDayState, setDayState } from './storage.js';
+import { getPuzzleByCode } from './airports.js';
 
-function evaluateGuess(code: string, target: string, airports: AirportMap): GuessResult {
+function evaluateGuess(code: string, target: string, coords: CoordsMap): GuessResult {
 	const letters: LetterResult[] = [
 		{ letter: code[0], state: 'absent' },
 		{ letter: code[1], state: 'absent' },
@@ -39,17 +41,12 @@ function evaluateGuess(code: string, target: string, airports: AirportMap): Gues
 	let direction = null;
 	let bearingDeg: number | null = null;
 
-	const guessAirport = airports[code];
-	const targetAirport = airports[target];
-	if (guessAirport && targetAirport) {
-		distanceKm = haversineKm(
-			guessAirport.lat,
-			guessAirport.lon,
-			targetAirport.lat,
-			targetAirport.lon
-		);
+	const guessCoords = coords[code];
+	const targetCoords = coords[target];
+	if (guessCoords && targetCoords) {
+		distanceKm = haversineKm(guessCoords[0], guessCoords[1], targetCoords[0], targetCoords[1]);
 		if (!isCorrect) {
-			bearingDeg = bearing(guessAirport.lat, guessAirport.lon, targetAirport.lat, targetAirport.lon);
+			bearingDeg = bearing(guessCoords[0], guessCoords[1], targetCoords[0], targetCoords[1]);
 			direction = compassDir(bearingDeg);
 		}
 	}
@@ -60,12 +57,12 @@ function evaluateGuess(code: string, target: string, airports: AirportMap): Gues
 function normalizeGuesses(
 	guesses: PersistedDayState['guesses'],
 	target: string,
-	airports: AirportMap
+	coords: CoordsMap
 ): GuessResult[] {
 	return guesses
 		.map((guess) => guess.code?.toUpperCase())
-		.filter((code): code is string => !!code && code.length === 3 && code in airports)
-		.map((code) => evaluateGuess(code, target, airports));
+		.filter((code): code is string => !!code && code.length === 3 && code in coords)
+		.map((code) => evaluateGuess(code, target, coords));
 }
 
 function deriveStatus(guesses: GuessResult[]): 'playing' | 'won' | 'lost' {
@@ -89,7 +86,7 @@ function computeKeyColors(guesses: GuessResult[]): Record<string, TileState> {
 }
 
 class GameState {
-	airports: AirportMap = $state({});
+	coords: CoordsMap = $state({});
 	targetCode: string = $state('');
 	guesses: GuessResult[] = $state([]);
 	currentInput: string = $state('');
@@ -101,16 +98,17 @@ class GameState {
 
 	keyColors: Record<string, TileState> = $derived(computeKeyColors(this.guesses));
 	canSubmit: boolean = $derived(this.currentInput.length === 3 && this.status === 'playing');
+	targetAirport: PuzzleAirport | undefined = $derived(getPuzzleByCode(this.targetCode));
 
-	init(airports: AirportMap, target: string, date: string, mode: GameMode) {
-		this.airports = airports;
+	init(coords: CoordsMap, target: string, date: string, mode: GameMode) {
+		this.coords = coords;
 		this.targetCode = target;
 		this.dateKey = date;
 		this.mode = mode;
 
 		const persisted = getDayState(date);
 		if (persisted && persisted.date === date) {
-			this.guesses = normalizeGuesses(persisted.guesses, target, airports);
+			this.guesses = normalizeGuesses(persisted.guesses, target, coords);
 			this.status = deriveStatus(this.guesses);
 		} else {
 			this.guesses = [];
@@ -139,7 +137,7 @@ class GameState {
 		if (!this.canSubmit) return;
 		const code = this.currentInput;
 
-		if (!(code in this.airports)) {
+		if (!(code in this.coords)) {
 			this.invalidCode = true;
 			this.shakeActive = true;
 			setTimeout(() => {
@@ -148,7 +146,7 @@ class GameState {
 			return;
 		}
 
-		const result = evaluateGuess(code, this.targetCode, this.airports);
+		const result = evaluateGuess(code, this.targetCode, this.coords);
 		this.guesses = [...this.guesses, result];
 		this.currentInput = '';
 		this.invalidCode = false;

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { airports, getDailyCode, getTodayDateKey } from '$lib/airports.js';
+	import { coords, getDailyCode, getTodayDateKey } from '$lib/airports.js';
 	import Footer from '$lib/components/Footer.svelte';
 	import GameBoard from '$lib/components/GameBoard.svelte';
 	import Header from '$lib/components/Header.svelte';
@@ -18,7 +18,7 @@
 		const target = getDailyCode(new Date());
 		const mode = getGameMode() ?? 'both';
 
-		game.init(airports, target, dateKey, mode);
+		game.init(coords, target, dateKey, mode);
 
 		if (!getIntroSeen()) showIntro = true;
 
