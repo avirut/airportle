@@ -59,7 +59,4 @@
 		</div>
 	{/each}
 
-	{#if game.invalidCode}
-		<p class="mt-2 text-sm font-medium text-destructive">Not a valid IATA code</p>
-	{/if}
 </section>

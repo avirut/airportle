@@ -8,6 +8,7 @@
 		results,
 		distanceKm,
 		direction,
+		bearingDeg,
 		mode,
 		isActive,
 		shake = false
@@ -16,6 +17,7 @@
 		results: LetterResult[] | null;
 		distanceKm: number | null;
 		direction: CompassDir | null;
+		bearingDeg: number | null;
 		mode: GameMode;
 		isActive: boolean;
 		shake?: boolean;
@@ -25,16 +27,6 @@
 	const showDistanceColumn = $derived(mode !== 'letters');
 	const showDistance = $derived(showDistanceColumn && distanceKm !== null);
 
-	const directionRotation: Record<CompassDir, number> = {
-		N: 0,
-		NE: 45,
-		E: 90,
-		SE: 135,
-		S: 180,
-		SW: 225,
-		W: 270,
-		NW: 315
-	};
 
 	function letterAt(index: number): string {
 		if (results) return results[index].letter;
@@ -82,7 +74,7 @@
 			>
 				<div class="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-foreground">
 					{#if direction}
-						<ArrowUp size={14} style={`transform: rotate(${directionRotation[direction]}deg)`} />
+						<ArrowUp size={14} style={`transform: rotate(${bearingDeg ?? 0}deg)`} />
 					{:else}
 						<Check size={14} />
 					{/if}
@@ -90,7 +82,7 @@
 				<div class="min-w-0">
 					<p class="font-medium text-foreground">{directionLabel(direction)}</p>
 					<p class="truncate text-xs text-muted-foreground">
-						{Math.round(distanceKm ?? 0).toLocaleString()} km away
+						{Math.round(distanceKm ?? 0).toLocaleString()} mi away
 					</p>
 				</div>
 			</div>

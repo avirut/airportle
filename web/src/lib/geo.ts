@@ -1,6 +1,6 @@
 import type { CompassDir } from './types.js';
 
-const R = 6371; // Earth radius in km
+const R = 3959; // Earth radius in miles
 
 function toRad(deg: number): number {
 	return (deg * Math.PI) / 180;

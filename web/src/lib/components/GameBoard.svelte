@@ -12,6 +12,7 @@
 			results={guess?.letters ?? null}
 			distanceKm={guess?.distanceKm ?? null}
 			direction={guess?.direction ?? null}
+			bearingDeg={guess?.bearingDeg ?? null}
 			mode={game.mode}
 			{isActive}
 			shake={isActive && game.shakeActive}

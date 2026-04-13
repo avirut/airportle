@@ -44,11 +44,20 @@
 	<div class="flex min-h-screen flex-col bg-background">
 		<Header onInfoClick={() => (showIntro = true)} />
 		<main
-			class="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center gap-6 px-4 py-5 sm:px-6"
+			class="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center px-4 py-5 sm:px-6"
 		>
-			<GameBoard />
-			<ResultToast />
-			<Keyboard />
+			<div class="flex flex-1 flex-col items-center justify-center gap-6">
+				<GameBoard />
+				<ResultToast />
+			</div>
+			<div class="relative mt-auto w-full max-w-md pt-4">
+				{#if game.invalidCode}
+					<p class="absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-sm font-medium text-destructive">
+						Not a valid IATA code
+					</p>
+				{/if}
+				<Keyboard />
+			</div>
 		</main>
 		<Footer />
 	</div>

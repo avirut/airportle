@@ -9,9 +9,7 @@
 		class="font-medium text-foreground underline-offset-2 hover:underline">avirut</a
 	>
 	<span class="px-2">·</span>
-	inspired by the -tles that came before
-	<span class="px-2">·</span>
-	uses
+	data from
 	<a
 		href="https://pypi.org/project/airportsdata/"
 		target="_blank"

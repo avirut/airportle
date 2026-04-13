@@ -37,6 +37,7 @@ function evaluateGuess(code: string, target: string, airports: AirportMap): Gues
 	const isCorrect = letters.every((letter) => letter.state === 'correct');
 	let distanceKm: number | null = null;
 	let direction = null;
+	let bearingDeg: number | null = null;
 
 	const guessAirport = airports[code];
 	const targetAirport = airports[target];
@@ -47,14 +48,13 @@ function evaluateGuess(code: string, target: string, airports: AirportMap): Gues
 			targetAirport.lat,
 			targetAirport.lon
 		);
-		direction = isCorrect
-			? null
-			: compassDir(
-					bearing(guessAirport.lat, guessAirport.lon, targetAirport.lat, targetAirport.lon)
-				);
+		if (!isCorrect) {
+			bearingDeg = bearing(guessAirport.lat, guessAirport.lon, targetAirport.lat, targetAirport.lon);
+			direction = compassDir(bearingDeg);
+		}
 	}
 
-	return { code, letters, distanceKm, direction, isCorrect };
+	return { code, letters, distanceKm, direction, bearingDeg, isCorrect };
 }
 
 function normalizeGuesses(

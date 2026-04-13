@@ -28,6 +28,7 @@ export interface GuessResult {
 	letters: LetterResult[];
 	distanceKm: number | null;
 	direction: CompassDir | null;
+	bearingDeg: number | null;
 	isCorrect: boolean;
 }
 

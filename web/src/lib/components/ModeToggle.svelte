@@ -2,7 +2,6 @@
 	import { game } from '$lib/game.svelte.js';
 	import { setGameMode } from '$lib/storage.js';
 	import type { GameMode } from '$lib/types.js';
-	import { ToggleGroup, ToggleGroupItem } from '$lib/components/ui/toggle-group/index.js';
 
 	const modes: { value: GameMode; label: string }[] = [
 		{ value: 'letters', label: 'Letters' },
@@ -10,27 +9,38 @@
 		{ value: 'distance', label: 'Distance' }
 	];
 
-	function handleChange(value: string | undefined) {
-		if (!value) return;
-		game.setMode(value as GameMode);
-		setGameMode(value as GameMode);
+	function select(mode: GameMode) {
+		game.setMode(mode);
+		setGameMode(mode);
 	}
 </script>
 
-<ToggleGroup
-	type="single"
-	size="sm"
-	variant="outline"
-	value={game.mode}
-	onValueChange={handleChange}
+<div
+	class="inline-flex items-center rounded-full border border-border p-0.5"
+	role="radiogroup"
+	aria-label="Game mode"
 >
 	{#each modes as mode}
-		<ToggleGroupItem
-			value={mode.value}
-			aria-label="{mode.label} mode"
-			class="data-[state=on]:bg-foreground data-[state=on]:text-background data-[state=on]:hover:bg-foreground/90"
-		>
-			{mode.label}
-		</ToggleGroupItem>
+		{#if game.mode === mode.value}
+			<button
+				type="button"
+				role="radio"
+				aria-checked="true"
+				onclick={() => select(mode.value)}
+				class="rounded-full bg-zinc-700 px-3 py-1 text-xs font-medium text-white shadow-sm"
+			>
+				{mode.label}
+			</button>
+		{:else}
+			<button
+				type="button"
+				role="radio"
+				aria-checked="false"
+				onclick={() => select(mode.value)}
+				class="rounded-full px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+			>
+				{mode.label}
+			</button>
+		{/if}
 	{/each}
-</ToggleGroup>
+</div>
